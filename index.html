@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Professional Calculator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="calculator-app">
+    <!-- Calculator Card -->
+    <main class="calculator-card" id="calculatorCard" role="region" aria-label="Calculator">
+      
+      <!-- Top Navigation: Mode Switcher & History Toggle -->
+      <header class="calc-header">
+        <div class="mode-toggle-group" role="tablist" aria-label="Calculator Mode">
+          <button type="button" class="mode-tab active" id="tabSimple" role="tab" aria-selected="true" data-mode="simple">
+            Simple
+          </button>
+          <button type="button" class="mode-tab" id="tabScientific" role="tab" aria-selected="false" data-mode="scientific">
+            Scientific
+          </button>
+        </div>
+
+        <div class="header-tools">
+          <button type="button" class="tool-btn" id="historyToggleBtn" title="Calculation History" aria-label="Toggle calculation history">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            <span class="history-badge" id="historyBadge" style="display: none;">0</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Memory Toolbar -->
+      <section class="memory-toolbar" aria-label="Memory Functions">
+        <button type="button" class="mem-btn" data-action="mem-clear" title="Memory Clear (MC)" aria-label="Memory Clear">MC</button>
+        <button type="button" class="mem-btn" data-action="mem-recall" title="Memory Recall (MR)" aria-label="Memory Recall">MR</button>
+        <button type="button" class="mem-btn" data-action="mem-add" title="Memory Add (M+)" aria-label="Memory Add">M+</button>
+        <button type="button" class="mem-btn" data-action="mem-sub" title="Memory Subtract (M-)" aria-label="Memory Subtract">M-</button>
+      </section>
+
+      <!-- Display Panel -->
+      <section class="display-panel" aria-label="Calculator Display">
+        <!-- Status Bar inside Display -->
+        <div class="display-status-bar">
+          <div class="status-left">
+            <button type="button" class="deg-rad-btn" id="degRadBtn" title="Click to toggle DEG/RAD">
+              <span class="angle-mode active" id="modeDegLabel">DEG</span>
+              <span class="angle-divider">|</span>
+              <span class="angle-mode" id="modeRadLabel">RAD</span>
+            </button>
+            <span class="memory-flag" id="memoryFlag" title="Value stored in memory">M</span>
+          </div>
+
+          <div class="status-right">
+            <button type="button" class="copy-btn" id="copyResultBtn" title="Copy result to clipboard" aria-label="Copy result">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              <span>Copy</span>
+              <span class="copy-alert" id="copyAlert">Copied!</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Expression Line (history of current calculation) -->
+        <div class="display-expression" id="displayExpression" aria-live="polite"></div>
+
+        <!-- Main Display (current number or evaluated result) -->
+        <div class="display-main" id="displayMain" aria-live="assertive">0</div>
+      </section>
+
+      <!-- Keypad Grid Container -->
+      <div class="keypad-container" id="keypadContainer">
+        
+        <!-- Scientific Section (4 columns × 5 rows) -->
+        <div class="keypad-scientific" id="scientificKeypad" aria-label="Scientific Functions" style="display: none;">
+          <!-- Row 1: Parentheses & Constants -->
+          <button type="button" class="btn btn-sci" data-action="paren-open" title="Open Parenthesis">(</button>
+          <button type="button" class="btn btn-sci" data-action="paren-close" title="Close Parenthesis">)</button>
+          <button type="button" class="btn btn-sci" data-action="const" data-value="π" title="Pi (3.14159...)">π</button>
+          <button type="button" class="btn btn-sci" data-action="const" data-value="e" title="Euler's number (2.71828...)">e</button>
+
+          <!-- Row 2: Trig & Factorial -->
+          <button type="button" class="btn btn-sci" data-action="func" data-value="sin(" title="Sine">sin</button>
+          <button type="button" class="btn btn-sci" data-action="func" data-value="cos(" title="Cosine">cos</button>
+          <button type="button" class="btn btn-sci" data-action="func" data-value="tan(" title="Tangent">tan</button>
+          <button type="button" class="btn btn-sci" data-action="factorial" title="Factorial (n!)">n!</button>
+
+          <!-- Row 3: Inverse Trig & Reciprocal -->
+          <button type="button" class="btn btn-sci" data-action="func" data-value="sin⁻¹(" title="Inverse Sine">sin⁻¹</button>
+          <button type="button" class="btn btn-sci" data-action="func" data-value="cos⁻¹(" title="Inverse Cosine">cos⁻¹</button>
+          <button type="button" class="btn btn-sci" data-action="func" data-value="tan⁻¹(" title="Inverse Tangent">tan⁻¹</button>
+          <button type="button" class="btn btn-sci" data-action="reciprocal" title="Reciprocal (1/x)">1/x</button>
+
+          <!-- Row 4: Powers & Exponential -->
+          <button type="button" class="btn btn-sci" data-action="square" title="Square (x²)">x²</button>
+          <button type="button" class="btn btn-sci" data-action="cube" title="Cube (x³)">x³</button>
+          <button type="button" class="btn btn-sci" data-action="power" title="Power (xʸ)">xʸ</button>
+          <button type="button" class="btn btn-sci" data-action="func" data-value="e^(" title="Exponential (eˣ)">eˣ</button>
+
+          <!-- Row 5: Roots & Logarithms -->
+          <button type="button" class="btn btn-sci" data-action="func" data-value="√(" title="Square Root (√)">√</button>
+          <button type="button" class="btn btn-sci" data-action="func" data-value="∛(" title="Cube Root (∛)">∛</button>
+          <button type="button" class="btn btn-sci" data-action="func" data-value="log(" title="Logarithm (base 10)">log</button>
+          <button type="button" class="btn btn-sci" data-action="func" data-value="ln(" title="Natural Logarithm (ln)">ln</button>
+        </div>
+
+        <!-- Standard / Basic Section (4 columns × 5 rows) -->
+        <div class="keypad-basic" id="basicKeypad" aria-label="Standard Keypad">
+          <!-- Row 1: Actions & Division -->
+          <button type="button" class="btn btn-danger" data-action="clear" title="All Clear (AC / Esc)">AC</button>
+          <button type="button" class="btn btn-action" data-action="backspace" title="Delete / Backspace (⌫)">⌫</button>
+          <button type="button" class="btn btn-action" data-action="percent" title="Percentage (%)">%</button>
+          <button type="button" class="btn btn-op" data-action="operator" data-value="÷" title="Divide (÷)">÷</button>
+
+          <!-- Row 2: 7, 8, 9, Multiply -->
+          <button type="button" class="btn btn-num" data-action="num" data-value="7">7</button>
+          <button type="button" class="btn btn-num" data-action="num" data-value="8">8</button>
+          <button type="button" class="btn btn-num" data-action="num" data-value="9">9</button>
+          <button type="button" class="btn btn-op" data-action="operator" data-value="×" title="Multiply (×)">×</button>
+
+          <!-- Row 3: 4, 5, 6, Subtract -->
+          <button type="button" class="btn btn-num" data-action="num" data-value="4">4</button>
+          <button type="button" class="btn btn-num" data-action="num" data-value="5">5</button>
+          <button type="button" class="btn btn-num" data-action="num" data-value="6">6</button>
+          <button type="button" class="btn btn-op" data-action="operator" data-value="-" title="Subtract (−)">−</button>
+
+          <!-- Row 4: 1, 2, 3, Add -->
+          <button type="button" class="btn btn-num" data-action="num" data-value="1">1</button>
+          <button type="button" class="btn btn-num" data-action="num" data-value="2">2</button>
+          <button type="button" class="btn btn-num" data-action="num" data-value="3">3</button>
+          <button type="button" class="btn btn-op" data-action="operator" data-value="+" title="Add (+)">+</button>
+
+          <!-- Row 5: Negate, 0, Decimal, Equals -->
+          <button type="button" class="btn btn-num" data-action="negate" title="Positive/Negative (+/-)">+/−</button>
+          <button type="button" class="btn btn-num" data-action="num" data-value="0">0</button>
+          <button type="button" class="btn btn-num" data-action="decimal" title="Decimal Point (.)">.</button>
+          <button type="button" class="btn btn-equals" data-action="equals" title="Calculate (= / Enter)">=</button>
+        </div>
+
+      </div>
+    </main>
+
+    <!-- Calculation History Drawer/Panel -->
+    <aside class="history-panel" id="historyPanel" aria-label="Calculation History" aria-hidden="true">
+      <div class="history-header">
+        <h3 class="history-heading">History</h3>
+        <div class="history-actions">
+          <button type="button" class="history-clear-btn" id="historyClearBtn" title="Clear all history">Clear</button>
+          <button type="button" class="history-close-btn" id="historyCloseBtn" title="Close history panel" aria-label="Close history">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="history-content" id="historyContent" tabindex="0">
+        <div class="history-empty" id="historyEmpty">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          <p>No calculations yet</p>
+          <span>Calculations will appear here</span>
+        </div>
+        <ul class="history-list" id="historyList"></ul>
+      </div>
+    </aside>
+
+    <!-- Backdrop for mobile history drawer -->
+    <div class="history-backdrop" id="historyBackdrop"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
